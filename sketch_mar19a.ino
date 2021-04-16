@@ -1,4 +1,5 @@
 #include <ESP8266WiFi.h>        // Include the Wi-Fi library
+#include <ESP8266HTTPClient.h>
 
 const char* ssid     = "KeuperIOT";         // The SSID (name) of the Wi-Fi network you want to connect to
 const char* password = "exPnPJ8gAPhF3Esh";     // The password of the Wi-Fi network
@@ -51,26 +52,14 @@ void loop() {
   } else {
     digitalWrite(13, LOW);
     if (getRequest){
-      sendGetRequest();
+      HTTPClient http;
+      http.begin("http://192.168.2.14:8000/knop/1");
+      int httpCode = http.GET();
+      if (httpCode > 0) {
+        Serial.println(httpCode);
+      }
+      http.end();
       getRequest = false;
     }
   }
-}
-
-void sendGetRequest()   //CONNECTING WITH MYSQL
-{
- Serial.println("sending");
- client.connect("83.85.113.219", 80);
-  Serial.println("sending get request");
-  client.print("GET /school/dht11.php?humidity=");
-  client.print(20);
-  client.print("&temperature=");
-  client.print(20);
-  client.print(" ");      //SPACE BEFORE HTTP/1.1
-  client.print("HTTP/1.1");
-  client.println();
-  client.println("Host: 83.85.113.219");
-  client.println("Connection: close");
-  client.println();
-
 }
